@@ -2,6 +2,7 @@ import java.io.IOException;
 
 /**
  * Created by filip on 2016-11-15.
+ * Developed by Filip Wennerdahl & Theo Walther.
  */
 public class Parser implements IParser {
 
@@ -134,11 +135,13 @@ public class Parser implements IParser {
 
         }
 
+        @Override
         public Object evaluate(Object[] args) throws Exception {
 
             return null; // Temporary return just to alleviate errors.
         }
 
+        @Override
         public void buildString(StringBuilder builder, int tabs) {
 
         }
