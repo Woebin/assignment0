@@ -48,13 +48,15 @@ public class Parser implements IParser {
 
         @Override
         public Object evaluate(Object[] args) throws Exception {
-            return null;
+            if (s != null) {
+                return s.evaluate(null);
+            }
         }
 
         @Override
         public void buildString(StringBuilder builder, int tabs) {
             builder.append("BlockNode");
-            tabs =+1;
+            tabs = +1;
 
             Tab.addTabs(builder, tabs);
             builder.append(ll + "\n");
@@ -79,7 +81,10 @@ public class Parser implements IParser {
 
         @Override
         public Object evaluate(Object[] args) throws Exception {
-            
+
+            if (s != null) {
+                s.evaluate(null); // To be changed.
+            }
             return null;
         }
 
@@ -208,7 +213,7 @@ public class Parser implements IParser {
     static class Tab {
         static void addTabs(StringBuilder builder, int tabs) {
 
-            for(int i = 0 ; i < tabs ; i++) {
+            for (int i = 0; i < tabs; i++) {
                 builder.append("\t");
             }
 
