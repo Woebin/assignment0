@@ -101,6 +101,7 @@ public class Tokenizer implements ITokenizer {
         return new Lexeme(strBuilder.toString(), Token.RIGHT_CURLY);
     }
 
+    /* TODO: Add check for max length. */
     private Lexeme extractIdent() throws IOException {
         StringBuilder strBuilder = new StringBuilder();
         strBuilder.append(scanner.current());
@@ -156,6 +157,7 @@ public class Tokenizer implements ITokenizer {
         return new Lexeme(strBuilder.toString(), Token.DIV_OP);
     }
 
+    /* TODO: Add check for max length. */
     private Lexeme extractIntLit() throws IOException {
         StringBuilder strBuilder = new StringBuilder();
         strBuilder.append(scanner.current());

@@ -2,7 +2,7 @@ import java.io.IOException;
 
 /**
  * Created by filip on 2016-11-15.
- * Developed by Filip Wennerdahl & Theo Walther.
+ * Developed by Theo Walther & Filip Wennerdahl.
  */
 public class Parser implements IParser {
 
@@ -38,13 +38,7 @@ public class Parser implements IParser {
                 throw new ParserException("Invalid token!");
             }
             ll = t.current();
-            try {
-                t.moveNext();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (TokenizerException e) {
-                e.printStackTrace();
-            }
+            t.moveNext();
             s = new StmtsNode(t);
             if (t.current().token() != Token.RIGHT_CURLY) {
                 throw new ParserException("Invalid token!");
@@ -59,7 +53,11 @@ public class Parser implements IParser {
 
         @Override
         public void buildString(StringBuilder builder, int tabs) {
-
+            builder.append("BlockNode");
+            tabs =+1;
+            for (i = 1; i <= tabs; i++){
+                builder.append()
+            }
         }
     }
 
@@ -181,7 +179,7 @@ public class Parser implements IParser {
         public FactorNode(Tokenizer t) throws IOException, TokenizerException, ParserException {
             li = t.current();
             t.moveNext();
-            if (t.current().token() != Token.LEFT_PAREN){
+            if (t.current().token() != Token.LEFT_PAREN) {
                 throw new ParserException("Invalid token!");
             }
             ll = t.current();
