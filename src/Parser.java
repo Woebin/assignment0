@@ -125,7 +125,7 @@ public class Parser implements IParser {
         Lexeme lop = null;
         ExprNode e = null;
 
-        public ExprNode(Tokenizer t) throws IOException, TokenizerException {
+        public ExprNode(Tokenizer t) throws IOException, TokenizerException, ParserException {
             tn = new TermNode(t);
             if (t.current().token() == Token.ADD_OP || t.current().token() == Token.SUB_OP) {
                 lop = t.current();
@@ -151,7 +151,7 @@ public class Parser implements IParser {
         Lexeme lop = null;
         TermNode tn = null;
 
-        public TermNode(Tokenizer t) throws IOException, TokenizerException {
+        public TermNode(Tokenizer t) throws IOException, TokenizerException, ParserException {
             f = new FactorNode(t);
             if (t.current().token() == Token.MULT_OP || t.current().token() == Token.DIV_OP) {
                 lop = t.current();
@@ -173,12 +173,22 @@ public class Parser implements IParser {
     }
 
     class FactorNode implements INode {
+        Lexeme li = null;
+        Lexeme ll = null;
         ExprNode e = null;
-        Lexeme l1 = null;
-        Lexeme l2 = null;
+        Lexeme lr = null;
 
-        public FactorNode(Tokenizer t) {
-            l1 = t.current();
+        public FactorNode(Tokenizer t) throws IOException, TokenizerException, ParserException {
+            li = t.current();
+            t.moveNext();
+            if (t.current().token() != Token.LEFT_PAREN){
+                throw new ParserException("Invalid token!");
+            }
+            ll = t.current();
+            t.moveNext();
+            e = new ExprNode(t);
+            lr = t.current();
+            t.moveNext();
         }
 
         @Override
