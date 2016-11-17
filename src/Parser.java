@@ -30,7 +30,11 @@ public class Parser implements IParser {
 
     class BlockNode implements INode {
         StmtsNode s = null;
+
         public BlockNode(Tokenizer t) {
+            if (t.current().token() != Token.LEFT_CURLY){
+
+            }
             s = new StmtsNode(t);
         }
 
@@ -68,7 +72,7 @@ public class Parser implements IParser {
     class AssignNode implements INode {
         ExprNode e = null;
 
-        public AssignNode (Tokenizer t) {
+        public AssignNode(Tokenizer t) {
             e = new ExprNode(t);
         }
 
@@ -87,10 +91,11 @@ public class Parser implements IParser {
         TermNode tn = null;
         ExprNode e = null;
 
-        public ExprNode (Tokenizer t) {
+        public ExprNode(Tokenizer t) {
             tn = new TermNode(t);
             e = new ExprNode(t);
         }
+
         @Override
         public Object evaluate(Object[] args) throws Exception {
             return null;
@@ -106,7 +111,7 @@ public class Parser implements IParser {
         FactorNode f = null;
         TermNode tn = null;
 
-        public TermNode (Tokenizer t){
+        public TermNode(Tokenizer t) {
             f = new FactorNode(t);
             tn = new TermNode(t);
         }
@@ -124,20 +129,15 @@ public class Parser implements IParser {
 
     class FactorNode implements INode {
         ExprNode e = null;
-
-        Lexeme l = null;
+        Lexeme l1 = null;
+        Lexeme l2 = null;
 
         public FactorNode(Tokenizer t) {
-            e = new ExprNode(t);
-            if (t.current().token() == Token.LEFT_CURLY) {
-
-            }
-
+            l1 = t.current();
         }
 
         @Override
         public Object evaluate(Object[] args) throws Exception {
-
             return null; // Temporary return just to alleviate errors.
         }
 
