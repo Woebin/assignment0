@@ -1,4 +1,6 @@
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by filip on 2016-11-15.
@@ -49,7 +51,9 @@ public class Parser implements IParser {
         @Override
         public Object evaluate(Object[] args) throws Exception {
             if (s != null) {
-                return s.evaluate(null);
+                Map<String, Integer> values = new HashMap<String, Integer>();
+                Object[] blargs = {values};
+                return s.evaluate(blargs);
             }
             return null;
         }
@@ -121,6 +125,8 @@ public class Parser implements IParser {
 
         @Override
         public Object evaluate(Object[] args) throws Exception {
+            Map<String, Integer> values = (Map<String, Integer>)args[0];
+            values.put(lid.value().toString(), (Integer)e.evaluate(args));
             return null;
         }
 
@@ -203,6 +209,23 @@ public class Parser implements IParser {
 
         @Override
         public Object evaluate(Object[] args) throws Exception {
+            if (e == null){
+                if (ll.token() != Token.IDENT){
+                    return new Integer.parseInt(ll.value());
+                } else {
+
+                    Map<String, Integer> values = (Map<String, Integer>)args[0];
+                    Integer val = values.get(ll.value().toString());
+                    if (val == null) {
+                        return 0;
+                    } else {
+                        return val;
+                    }
+
+                }
+            } else {
+                return e.evaluate();
+            }
             return null; // Temporary return just to alleviate errors.
         }
 
