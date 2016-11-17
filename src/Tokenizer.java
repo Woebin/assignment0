@@ -105,6 +105,10 @@ public class Tokenizer implements ITokenizer {
         StringBuilder strBuilder = new StringBuilder();
         strBuilder.append(scanner.current());
         scanner.moveNext();
+        while(Character.isLetter(scanner.current())) {
+            strBuilder.append(scanner.current());
+            scanner.moveNext();
+        }
         return new Lexeme(strBuilder.toString(), Token.IDENT);
     }
 
@@ -156,6 +160,10 @@ public class Tokenizer implements ITokenizer {
         StringBuilder strBuilder = new StringBuilder();
         strBuilder.append(scanner.current());
         scanner.moveNext();
+        while(Character.isDigit(scanner.current())) {
+            strBuilder.append(scanner.current());
+            scanner.moveNext();
+        }
         return new Lexeme(strBuilder.toString(), Token.INT_LIT);
     }
 
