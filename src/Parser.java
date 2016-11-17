@@ -29,13 +29,27 @@ public class Parser implements IParser {
     }
 
     class BlockNode implements INode {
+        Lexeme ll = null;
         StmtsNode s = null;
+        Lexeme lr = null;
 
-        public BlockNode(Tokenizer t) {
-            if (t.current().token() != Token.LEFT_CURLY){
-
+        public BlockNode(Tokenizer t) throws ParserException, IOException, TokenizerException {
+            if (t.current().token() != Token.LEFT_CURLY) {
+                throw new ParserException("Invalid token!");
+            }
+            ll = t.current();
+            try {
+                t.moveNext();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (TokenizerException e) {
+                e.printStackTrace();
             }
             s = new StmtsNode(t);
+            if (t.current().token() != Token.RIGHT_CURLY) {
+                throw new ParserException("Invalid token!");
+            }
+            lr = t.current();
         }
 
         @Override
@@ -53,9 +67,12 @@ public class Parser implements IParser {
         AssignNode a = null;
         StmtsNode s = null;
 
-        public StmtsNode(Tokenizer t) {
-            a = new AssignNode(t);
+        public StmtsNode(Tokenizer t) throws IOException, TokenizerException, ParserException {
+            if (t.current().token() != Token.NULL) {
+                a = new AssignNode(t);
+            }
             s = new StmtsNode(t);
+            t.moveNext();
         }
 
         @Override
@@ -70,10 +87,26 @@ public class Parser implements IParser {
     }
 
     class AssignNode implements INode {
+        Lexeme lid = null;
         ExprNode e = null;
+        Lexeme lass = null;
 
-        public AssignNode(Tokenizer t) {
+        public AssignNode(Tokenizer t) throws IOException, TokenizerException, ParserException {
+            if (t.current().token() != Token.IDENT) {
+                throw new ParserException("Invalid token!");
+            }
+            lid = t.current();
+            t.moveNext();
+            if (t.current().token() != Token.ASSIGN_OP) {
+                throw new ParserException("Invalid token!");
+            }
+            lass = t.current();
+            t.moveNext();
             e = new ExprNode(t);
+            if (t.current().token() != Token.SEMICOLON) {
+                throw new ParserException("Invalid token!");
+            }
+            t.moveNext();
         }
 
         @Override
@@ -89,11 +122,17 @@ public class Parser implements IParser {
 
     class ExprNode implements INode {
         TermNode tn = null;
+        Lexeme lop = null;
         ExprNode e = null;
 
-        public ExprNode(Tokenizer t) {
+        public ExprNode(Tokenizer t) throws IOException, TokenizerException {
             tn = new TermNode(t);
-            e = new ExprNode(t);
+            if (t.current().token() == Token.ADD_OP || t.current().token() == Token.SUB_OP) {
+                lop = t.current();
+                t.moveNext();
+                e = new ExprNode(t);
+            }
+            t.moveNext();
         }
 
         @Override
@@ -109,11 +148,17 @@ public class Parser implements IParser {
 
     class TermNode implements INode {
         FactorNode f = null;
+        Lexeme lop = null;
         TermNode tn = null;
 
-        public TermNode(Tokenizer t) {
+        public TermNode(Tokenizer t) throws IOException, TokenizerException {
             f = new FactorNode(t);
-            tn = new TermNode(t);
+            if (t.current().token() == Token.MULT_OP || t.current().token() == Token.DIV_OP) {
+                lop = t.current();
+                t.moveNext();
+                tn = new TermNode(t);
+            }
+            t.moveNext();
         }
 
         @Override
