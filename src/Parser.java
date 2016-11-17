@@ -55,9 +55,13 @@ public class Parser implements IParser {
         public void buildString(StringBuilder builder, int tabs) {
             builder.append("BlockNode");
             tabs =+1;
-            for (i = 1; i <= tabs; i++){
-                builder.append()
-            }
+
+            Tab.addTabs(builder, tabs);
+            builder.append(ll + "\n");
+            Tab.addTabs(builder, tabs);
+            s.buildString(builder, tabs);
+            Tab.addTabs(builder, tabs);
+            builder.append(lr + "\n");
         }
     }
 
@@ -75,6 +79,7 @@ public class Parser implements IParser {
 
         @Override
         public Object evaluate(Object[] args) throws Exception {
+            
             return null;
         }
 
@@ -196,6 +201,16 @@ public class Parser implements IParser {
 
         @Override
         public void buildString(StringBuilder builder, int tabs) {
+
+        }
+    }
+
+    static class Tab {
+        static void addTabs(StringBuilder builder, int tabs) {
+
+            for(int i = 0 ; i < tabs ; i++) {
+                builder.append("\t");
+            }
 
         }
     }
