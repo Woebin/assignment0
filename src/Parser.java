@@ -5,6 +5,7 @@ import java.util.Map;
 /**
  * Created by filip on 2016-11-15.
  * Developed by Theo Walther & Filip Wennerdahl.
+ * With troubleshooting assistance from Gabriel Banfalvi.
  */
 public class Parser implements IParser {
 
@@ -30,9 +31,12 @@ public class Parser implements IParser {
         }
     }
 
+    /*
+    block = ’{’ , stmts , ’}’ ;
+     */
     class BlockNode implements INode {
         Lexeme ll = null;
-        StmtsNode s = null;
+        StatementsNode s = null;
         Lexeme lr = null;
 
         public BlockNode(Tokenizer t) throws ParserException, IOException, TokenizerException {
@@ -41,7 +45,7 @@ public class Parser implements IParser {
             }
             ll = t.current();
             t.moveNext();
-            s = new StmtsNode(t);
+            s = new StatementsNode(t);
             if (t.current().token() != Token.RIGHT_CURLY) {
                 throw new ParserException("Invalid token!");
             }
@@ -60,7 +64,7 @@ public class Parser implements IParser {
 
         @Override
         public void buildString(StringBuilder builder, int tabs) {
-            builder.append("BlockNode");
+            builder.append("BlockNode" + "\n");
             tabs = +1;
 
             Tab.addTabs(builder, tabs);
@@ -72,14 +76,17 @@ public class Parser implements IParser {
         }
     }
 
-    class StmtsNode implements INode {
-        AssignNode a = null;
-        StmtsNode s = null;
+    /*
+    stmts = [ assign , stmts ] ;
+     */
+    class StatementsNode implements INode {
+        AssignmentNode a = null;
+        StatementsNode s = null;
 
-        public StmtsNode(Tokenizer t) throws IOException, TokenizerException, ParserException {
+        public StatementsNode(Tokenizer t) throws IOException, TokenizerException, ParserException {
             if (t.current().token() == Token.IDENT) {
-                a = new AssignNode(t);
-                s = new StmtsNode(t);
+                a = new AssignmentNode(t);
+                s = new StatementsNode(t);
             }
         }
 
@@ -94,17 +101,29 @@ public class Parser implements IParser {
 
         @Override
         public void buildString(StringBuilder builder, int tabs) {
+            builder.append("StatementsNode" + "\n");
+            tabs += 1;
 
+            if (a != null) {
+                Tab.addTabs(builder, tabs);
+                a.buildString(builder, tabs);
+            } if (s != null) {
+                Tab.addTabs(builder, tabs);
+                s.buildString(builder, tabs);
+            }
         }
     }
 
-    class AssignNode implements INode {
+    /*
+    assign = id , ’=’ , expr , ’;’ ;
+     */
+    class AssignmentNode implements INode {
         Lexeme lid = null;
         Lexeme lass = null;
-        ExprNode e = null;
+        ExpressionNode e = null;
         Lexeme ls = null;
 
-        public AssignNode(Tokenizer t) throws IOException, TokenizerException, ParserException {
+        public AssignmentNode(Tokenizer t) throws IOException, TokenizerException, ParserException {
             if (t.current().token() != Token.IDENT) {
                 throw new ParserException("Invalid token!");
             }
@@ -115,7 +134,7 @@ public class Parser implements IParser {
             }
             lass = t.current();
             t.moveNext();
-            e = new ExprNode(t);
+            e = new ExpressionNode(t);
             if (t.current().token() != Token.SEMICOLON) {
                 throw new ParserException("Invalid token!");
             }
@@ -132,21 +151,34 @@ public class Parser implements IParser {
 
         @Override
         public void buildString(StringBuilder builder, int tabs) {
+            builder.append("AssignmentNode" + "\n");
+            tabs += 1;
 
+            Tab.addTabs(builder, tabs);
+            builder.append(lid + "\n");
+            Tab.addTabs(builder, tabs);
+            builder.append(lass + "\n");
+            Tab.addTabs(builder, tabs);
+            e.buildString(builder, tabs);
+            Tab.addTabs(builder, tabs);
+            builder.append(ls + "\n");
         }
     }
 
-    class ExprNode implements INode {
+    /*
+    expr = term , [ ( ’+’ | ’-’ ) , expr ] ;
+     */
+    class ExpressionNode implements INode {
         TermNode tn = null;
         Lexeme lop = null;
-        ExprNode e = null;
+        ExpressionNode e = null;
 
-        public ExprNode(Tokenizer t) throws IOException, TokenizerException, ParserException {
+        public ExpressionNode(Tokenizer t) throws IOException, TokenizerException, ParserException {
             tn = new TermNode(t);
             if (t.current().token() == Token.ADD_OP || t.current().token() == Token.SUB_OP) {
                 lop = t.current();
                 t.moveNext();
-                e = new ExprNode(t);
+                e = new ExpressionNode(t);
             }
 
         }
@@ -158,10 +190,23 @@ public class Parser implements IParser {
 
         @Override
         public void buildString(StringBuilder builder, int tabs) {
+            builder.append("ExpressionNode" + "\n");
+            tabs += 1;
 
+            Tab.addTabs(builder, tabs);
+            tn.buildString(builder, tabs);
+            if (lop != null){
+                Tab.addTabs(builder, tabs);
+                builder.append(lop + "\n");
+                Tab.addTabs(builder, tabs);
+                e.buildString(builder, tabs);
+            }
         }
     }
 
+    /*
+    term = factor , [ ( ’*’ | ’/’ ) , term ] ;
+     */
     class TermNode implements INode {
         FactorNode f = null;
         Lexeme lop = null;
@@ -183,13 +228,26 @@ public class Parser implements IParser {
 
         @Override
         public void buildString(StringBuilder builder, int tabs) {
+            builder.append("TermNode" + "\n");
+            tabs += 1;
 
+            Tab.addTabs(builder, tabs);
+            f.buildString(builder, tabs);
+            if (lop != null) {
+                Tab.addTabs(builder, tabs);
+                builder.append(lop + "\n");
+                Tab.addTabs(builder, tabs);
+                tn.buildString(builder, tabs);
+            }
         }
     }
 
+    /*
+    factor = int | id | ’(’ , expr , ’)’ ;
+     */
     class FactorNode implements INode {
         Lexeme ll = null;
-        ExprNode e = null;
+        ExpressionNode e = null;
         Lexeme lr = null;
 
         public FactorNode(Tokenizer t) throws IOException, TokenizerException, ParserException {
@@ -198,7 +256,7 @@ public class Parser implements IParser {
             } else if (t.current().token() == Token.LEFT_PAREN) {
                 ll = t.current();
                 t.moveNext();
-                e = new ExprNode(t);
+                e = new ExpressionNode(t);
                 lr = t.current();
                 t.moveNext();
             } else {
@@ -211,7 +269,8 @@ public class Parser implements IParser {
         public Object evaluate(Object[] args) throws Exception {
             if (e == null){
                 if (ll.token() != Token.IDENT){
-                    return new Integer.parseInt(ll.value());
+                    int temp = Integer.parseInt((String) ll.value());
+                    return temp;
                 } else {
 
                     Map<String, Integer> values = (Map<String, Integer>)args[0];
@@ -224,14 +283,24 @@ public class Parser implements IParser {
 
                 }
             } else {
-                return e.evaluate();
+                return e.evaluate(null); // Temporary param.
             }
-            return null; // Temporary return just to alleviate errors.
+//            return null; // Temporary return just to alleviate errors.
         }
 
         @Override
         public void buildString(StringBuilder builder, int tabs) {
+            builder.append("FactorNode" + "\n");
+            tabs += 1;
 
+            Tab.addTabs(builder, tabs);
+            builder.append(ll + "\n");
+            if (e != null) {
+                Tab.addTabs(builder, tabs);
+                e.buildString(builder, tabs);
+                Tab.addTabs(builder, tabs);
+                builder.append(lr + "\n");
+            }
         }
     }
 
