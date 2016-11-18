@@ -57,7 +57,15 @@ public class Parser implements IParser {
             if (s != null) {
                 Map<String, Double> values = new HashMap<String, Double>();
                 Object[] identifiers = {values};
-                return s.evaluate(identifiers);
+
+                StringBuilder results = new StringBuilder();
+
+                for(Map.Entry<String, Double> entry : values.entrySet()) {
+                    results.append(entry.getKey() + " = " +  entry.getValue() + "\n");
+                }
+
+
+                return results;
             }
             return null;
         }
@@ -67,11 +75,11 @@ public class Parser implements IParser {
             builder.append("BlockNode" + "\n");
             tabs = +1;
 
-            Tab.addTabs(builder, tabs);
+            Tab.appendTabs(builder, tabs);
             builder.append(ll + "\n");
-            Tab.addTabs(builder, tabs);
+            Tab.appendTabs(builder, tabs);
             s.buildString(builder, tabs);
-            Tab.addTabs(builder, tabs);
+            Tab.appendTabs(builder, tabs);
             builder.append(lr + "\n");
         }
     }
@@ -108,11 +116,11 @@ public class Parser implements IParser {
             tabs += 1;
 
             if (a != null) {
-                Tab.addTabs(builder, tabs);
+                Tab.appendTabs(builder, tabs);
                 a.buildString(builder, tabs);
             }
             if (s != null) {
-                Tab.addTabs(builder, tabs);
+                Tab.appendTabs(builder, tabs);
                 s.buildString(builder, tabs);
             }
         }
@@ -158,13 +166,13 @@ public class Parser implements IParser {
             builder.append("AssignmentNode" + "\n");
             tabs += 1;
 
-            Tab.addTabs(builder, tabs);
+            Tab.appendTabs(builder, tabs);
             builder.append(lid + "\n");
-            Tab.addTabs(builder, tabs);
+            Tab.appendTabs(builder, tabs);
             builder.append(lass + "\n");
-            Tab.addTabs(builder, tabs);
+            Tab.appendTabs(builder, tabs);
             e.buildString(builder, tabs);
-            Tab.addTabs(builder, tabs);
+            Tab.appendTabs(builder, tabs);
             builder.append(ls + "\n");
         }
     }
@@ -203,12 +211,12 @@ public class Parser implements IParser {
             builder.append("ExpressionNode" + "\n");
             tabs += 1;
 
-            Tab.addTabs(builder, tabs);
+            Tab.appendTabs(builder, tabs);
             tn.buildString(builder, tabs);
             if (lop != null) {
-                Tab.addTabs(builder, tabs);
+                Tab.appendTabs(builder, tabs);
                 builder.append(lop + "\n");
-                Tab.addTabs(builder, tabs);
+                Tab.appendTabs(builder, tabs);
                 e.buildString(builder, tabs);
             }
         }
@@ -251,12 +259,12 @@ public class Parser implements IParser {
             builder.append("TermNode" + "\n");
             tabs += 1;
 
-            Tab.addTabs(builder, tabs);
+            Tab.appendTabs(builder, tabs);
             f.buildString(builder, tabs);
             if (lop != null) {
-                Tab.addTabs(builder, tabs);
+                Tab.appendTabs(builder, tabs);
                 builder.append(lop + "\n");
-                Tab.addTabs(builder, tabs);
+                Tab.appendTabs(builder, tabs);
                 tn.buildString(builder, tabs);
             }
         }
@@ -305,19 +313,19 @@ public class Parser implements IParser {
             builder.append("FactorNode" + "\n");
             tabs += 1;
 
-            Tab.addTabs(builder, tabs);
+            Tab.appendTabs(builder, tabs);
             builder.append(ll + "\n");
             if (e != null) {
-                Tab.addTabs(builder, tabs);
+                Tab.appendTabs(builder, tabs);
                 e.buildString(builder, tabs);
-                Tab.addTabs(builder, tabs);
+                Tab.appendTabs(builder, tabs);
                 builder.append(lr + "\n");
             }
         }
     }
 
     static class Tab {
-        static void addTabs(StringBuilder builder, int tabs) {
+        static void appendTabs(StringBuilder builder, int tabs) {
 
             for (int i = 0; i < tabs; i++) {
                 builder.append("\t");
