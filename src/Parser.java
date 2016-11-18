@@ -57,8 +57,8 @@ public class Parser implements IParser {
         public Object evaluate(Object[] args) throws Exception {
             if (s != null) {
                 Map<String, Double> values = new HashMap<String, Double>();
-                Object[] identifiers = {values};
-                s.evaluate(identifiers);
+                Object[] arguments = {values};
+                s.evaluate(arguments);
                 StringBuilder results = new StringBuilder();
 
                 for(Map.Entry<String, Double> entry : values.entrySet()) {
@@ -102,11 +102,9 @@ public class Parser implements IParser {
 
             if (a != null) {
                 a.evaluate(args);
+                s.evaluate(args);
             }
-            if (s != null) {
-                s.evaluate(args); // To be changed.
-            }
-            return null;
+            return args[0];
         }
 
         @Override
@@ -156,8 +154,8 @@ public class Parser implements IParser {
         @Override
         public Object evaluate(Object[] args) throws Exception {
             Map<String, Double> values = (Map<String, Double>) args[0];
-            values.put(lid.value().toString(), (Double) e.evaluate(args));
-            return null;
+            values.put(lid.value().toString(), (double) e.evaluate(args));
+            return values;
         }
 
         @Override
@@ -196,12 +194,16 @@ public class Parser implements IParser {
 
         @Override
         public Object evaluate(Object[] args) throws Exception {
-            double td = (double) tn.evaluate(args);
-            double ed = (double) e.evaluate(args);
-            if (lop.token() == Token.ADD_OP) {
-                return (td + ed);
+
+            if (lop != null) {
+                double ed = (double) e.evaluate(args);
+                if (lop.token() == Token.ADD_OP) {
+                    return (((double) tn.evaluate(args)) + ed);
+                } else {
+                    return (((double) tn.evaluate(args)) - ed);
+                }
             } else {
-                return (td - ed);
+                return (tn.evaluate(args));
             }
         }
 
@@ -304,7 +306,7 @@ public class Parser implements IParser {
                     return val;
                 }
             }
-            return e.evaluate(args); // Temporary param.
+            return e.evaluate(args);
         }
 
         @Override
