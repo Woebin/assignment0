@@ -93,8 +93,11 @@ public class Parser implements IParser {
         @Override
         public Object evaluate(Object[] args) throws Exception {
 
+            if (e != null) {
+                e.evaluate(args);
+            }
             if (s != null) {
-                s.evaluate(null); // To be changed.
+                s.evaluate(args); // To be changed.
             }
             return null;
         }
@@ -145,8 +148,8 @@ public class Parser implements IParser {
 
         @Override
         public Object evaluate(Object[] args) throws Exception {
-            Map<String, Integer> values = (Map<String, Integer>) args[0];
-            values.put(lid.value().toString(), (Integer) e.evaluate(args));
+            Map<String, Double> values = (Map<String, Double>) args[0];
+            values.put(lid.value().toString(), (Double) e.evaluate(args));
             return null;
         }
 
@@ -186,7 +189,13 @@ public class Parser implements IParser {
 
         @Override
         public Object evaluate(Object[] args) throws Exception {
-            return null;
+            double td = (double) tn.evaluate(args);
+            double ed = (double) e.evaluate(args);
+            if (lop.token() == Token.ADD_OP) {
+                return (td + ed);
+            } else {
+                return (td - ed);
+            }
         }
 
         @Override
@@ -224,7 +233,17 @@ public class Parser implements IParser {
 
         @Override
         public Object evaluate(Object[] args) throws Exception {
-            return null;
+            double fd = (double) f.evaluate(args);
+            if (lop == null) {
+                return fd;
+            } else {
+                double td = (double) tn.evaluate(args);
+                if (lop.token() == Token.MULT_OP) {
+                    return (fd * td);
+                } else {
+                    return (fd / td);
+                }
+            }
         }
 
         @Override
@@ -277,9 +296,8 @@ public class Parser implements IParser {
                     double val = identifiers.get(ll.value().toString());
                     return val;
                 }
-            } else {
-                return e.evaluate(args); // Temporary param.
             }
+            return e.evaluate(args); // Temporary param.
         }
 
         @Override
