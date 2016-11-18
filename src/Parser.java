@@ -50,6 +50,7 @@ public class Parser implements IParser {
                 throw new ParserException("Invalid token!");
             }
             lr = t.current();
+
         }
 
         @Override
@@ -57,17 +58,15 @@ public class Parser implements IParser {
             if (s != null) {
                 Map<String, Double> values = new HashMap<String, Double>();
                 Object[] identifiers = {values};
-
+                s.evaluate(identifiers);
                 StringBuilder results = new StringBuilder();
 
                 for(Map.Entry<String, Double> entry : values.entrySet()) {
                     results.append(entry.getKey() + " = " +  entry.getValue() + "\n");
                 }
-
-
-                return results;
+                return results.toString();
             }
-            return null;
+            return "";
         }
 
         @Override
