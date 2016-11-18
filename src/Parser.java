@@ -194,13 +194,13 @@ public class Parser implements IParser {
 
         @Override
         public Object evaluate(Object[] args) throws Exception {
-
+            double td = (double) tn.evaluate(args);
             if (lop != null) {
                 double ed = (double) e.evaluate(args);
                 if (lop.token() == Token.ADD_OP) {
-                    return (((double) tn.evaluate(args)) + ed);
+                    return (td + ed);
                 } else {
-                    return (((double) tn.evaluate(args)) - ed);
+                    return (td - ed);
                 }
             } else {
                 return (tn.evaluate(args));
