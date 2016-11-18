@@ -55,9 +55,9 @@ public class Parser implements IParser {
         @Override
         public Object evaluate(Object[] args) throws Exception {
             if (s != null) {
-                Map<String, Integer> values = new HashMap<String, Integer>();
-                Object[] blargs = {values};
-                return s.evaluate(blargs);
+                Map<String, Double> values = new HashMap<String, Double>();
+                Object[] identifiers = {values};
+                return s.evaluate(identifiers);
             }
             return null;
         }
@@ -107,7 +107,8 @@ public class Parser implements IParser {
             if (a != null) {
                 Tab.addTabs(builder, tabs);
                 a.buildString(builder, tabs);
-            } if (s != null) {
+            }
+            if (s != null) {
                 Tab.addTabs(builder, tabs);
                 s.buildString(builder, tabs);
             }
@@ -144,8 +145,8 @@ public class Parser implements IParser {
 
         @Override
         public Object evaluate(Object[] args) throws Exception {
-            Map<String, Integer> values = (Map<String, Integer>)args[0];
-            values.put(lid.value().toString(), (Integer)e.evaluate(args));
+            Map<String, Integer> values = (Map<String, Integer>) args[0];
+            values.put(lid.value().toString(), (Integer) e.evaluate(args));
             return null;
         }
 
@@ -195,7 +196,7 @@ public class Parser implements IParser {
 
             Tab.addTabs(builder, tabs);
             tn.buildString(builder, tabs);
-            if (lop != null){
+            if (lop != null) {
                 Tab.addTabs(builder, tabs);
                 builder.append(lop + "\n");
                 Tab.addTabs(builder, tabs);
@@ -267,25 +268,18 @@ public class Parser implements IParser {
 
         @Override
         public Object evaluate(Object[] args) throws Exception {
-            if (e == null){
-                if (ll.token() != Token.IDENT){
-                    int temp = Integer.parseInt((String) ll.value());
+            if (e == null) {
+                if (ll.token() != Token.IDENT && ll.token() != Token.LEFT_PAREN) {
+                    double temp = Double.parseDouble((String) ll.value());
                     return temp;
-                } else {
-
-                    Map<String, Integer> values = (Map<String, Integer>)args[0];
-                    Integer val = values.get(ll.value().toString());
-                    if (val == null) {
-                        return 0;
-                    } else {
-                        return val;
-                    }
-
+                } else if (ll.token() == Token.IDENT) {
+                    Map<String, Double> identifiers = (Map<String, Double>) args[0];
+                    double val = identifiers.get(ll.value().toString());
+                    return val;
                 }
             } else {
-                return e.evaluate(null); // Temporary param.
+                return e.evaluate(args); // Temporary param.
             }
-//            return null; // Temporary return just to alleviate errors.
         }
 
         @Override
