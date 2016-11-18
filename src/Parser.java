@@ -60,9 +60,16 @@ public class Parser implements IParser {
                 Object[] arguments = {values};
                 s.evaluate(arguments);
                 StringBuilder results = new StringBuilder();
-
-                for(Map.Entry<String, Double> entry : values.entrySet()) {
-                    results.append(entry.getKey() + " = " +  entry.getValue() + "\n");
+                String prev;
+                String curr = "";
+                for (Map.Entry<String, Double> entry : values.entrySet()) {
+                    prev = curr;
+                    curr = entry.getKey();
+                    if (curr.compareTo(prev) < 1) {
+                        results.insert(0, entry.getKey() + " = " + entry.getValue() + "\n");
+                    } else {
+                        results.append(entry.getKey() + " = " + entry.getValue() + "\n");
+                    }
                 }
                 return results.toString();
             }
@@ -246,11 +253,16 @@ public class Parser implements IParser {
             if (lop == null) {
                 return fd;
             } else {
-                double td = (double) tn.evaluate(args);
                 if (lop.token() == Token.MULT_OP) {
-                    return (fd * td);
+                    return (fd * (double) tn.evaluate(args));
+                    // Below: a desperate attempt to solve the double division problem.
+                /*} else if (lop.token() == Token.DIV_OP && tn.lop.token() == Token.DIV_OP) {
+                    double f2 = (double) tn.f.evaluate(args);
+                    fd = fd / f2;
+                    tn.f.ll = new Lexeme(f2, Token.INT_LIT);
+                    return (fd / (double) tn.evaluate(args));*/
                 } else {
-                    return (fd / td);
+                    return (fd / (double) tn.evaluate(args));
                 }
             }
         }
@@ -298,8 +310,7 @@ public class Parser implements IParser {
         public Object evaluate(Object[] args) throws Exception {
             if (e == null) {
                 if (ll.token() != Token.IDENT && ll.token() != Token.LEFT_PAREN) {
-                    double temp = Double.parseDouble((String) ll.value());
-                    return temp;
+                    return Double.parseDouble((String) ll.value());
                 } else if (ll.token() == Token.IDENT) {
                     Map<String, Double> identifiers = (Map<String, Double>) args[0];
                     double val = identifiers.get(ll.value().toString());
