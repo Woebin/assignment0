@@ -252,18 +252,16 @@ public class Parser implements IParser {
             double fd = (double) f.evaluate(args);
             if (lop == null) {
                 return fd;
-            } else {
-                if (lop.token() == Token.MULT_OP) {
-                    return (fd * (double) tn.evaluate(args));
-                    // Below: a desperate attempt to solve the double division problem.
+            } else if (lop.token() == Token.MULT_OP) {
+                return (fd * (double) tn.evaluate(args));
+                // Below: a desperate attempt to solve the double division problem.
                 /*} else if (lop.token() == Token.DIV_OP && tn.lop.token() == Token.DIV_OP) {
                     double f2 = (double) tn.f.evaluate(args);
                     fd = fd / f2;
                     tn.f.ll = new Lexeme(f2, Token.INT_LIT);
                     return (fd / (double) tn.evaluate(args));*/
-                } else {
-                    return (fd / (double) tn.evaluate(args));
-                }
+            } else {
+                return (fd / (double) tn.evaluate(args));
             }
         }
 
