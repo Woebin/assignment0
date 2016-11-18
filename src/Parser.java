@@ -93,8 +93,8 @@ public class Parser implements IParser {
         @Override
         public Object evaluate(Object[] args) throws Exception {
 
-            if (e != null) {
-                e.evaluate(args);
+            if (a != null) {
+                a.evaluate(args);
             }
             if (s != null) {
                 s.evaluate(args); // To be changed.
